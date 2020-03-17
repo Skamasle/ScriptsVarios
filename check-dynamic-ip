@@ -1,0 +1,16 @@
+#!/bin/bash
+file=/etc/miip
+currentIP=$(dig -4 TXT +short o-o.myaddr.1.google.com @ns1.google.com )
+if [ $? == 0 ] && [ ${currentIP} ]; then  ## when dig command run without error,
+    currentIP=$(echo $currentIP | cut -d'"' -f 2)
+else  ## error happens,
+    exit
+fi
+ip=$(cat /etc/miip)
+if [ $ip != $currentIP ]; then
+	#Change this for you whant to run when IP change
+	bash /root/cloudflare-sync/cloud-skamas/cloud.sh
+	bash /root/cloudflare-sync/cloud-esbueno/cloud.sh
+  ###
+	echo $currentIP > /etc/miip
+fi
